@@ -51,28 +51,18 @@ public class MST {
 		int iter = 0;
 		s = System.currentTimeMillis();
 		LinkedList<Vertex> currAdjList;
-		System.out.println("Starting Prims");
+		//System.out.println("Starting Prims");
 		while (!pq.isEmpty()) {
 			Vertex v = pq.poll();
 			mst.add(v);
-			//if (iter % 10000 == 0)
-				System.err.println(v);
+			if (v.getDuplicateRef() != null)
+				adjList.removeVertex(v);
+			if (iter % 10000 == 0)
+				System.err.println(iter + " " +v);
 			weight += v.getWeight();
 			currAdjList = adjList.getAdjList()[v.getKey()];
-			for (Vertex u: currAdjList) {
-				if (usedVertices[u.getKey()] == false) {
-					//updateQ(currAdjList, v.getKey());
-					u.setParentKey(v.getKey());
-					Vertex n = vertexInQueue(u);
-					if (n == null)
-						pq.offer(u);
-					else if (u.getWeight() < n.getWeight()){
-						n.setParentKey(v.getKey());
-						n.setWeight(u.getWeight());
-					}
-				}
-			}
-			sortQ();
+			updateQ(currAdjList, v);
+			
 			usedVertices[v.getKey()] = true;
 			iter++;
 		}
@@ -146,40 +136,31 @@ public class MST {
 		return null;
 	}
 
-	public void updateQ(LinkedList<Vertex> list, int parentKey) {
-		ArrayList<Vertex> tempList = new ArrayList<>();
-		for (Vertex v: list) {
-			/*for (Vertex u: pq) {
-				if (v.getKey() == u.getKey() && v.getWeight() < u.getWeight()) {
-					u.setWeight(v.getWeight());
-					u.setParentKey(parentKey);
-					tempList.add(u);
-					//pq.remove(u);
+	public void updateQ(LinkedList<Vertex> list, Vertex lastRemoved) {
+		ArrayList<Vertex> tempL = new ArrayList<>();
+		
+		for (Vertex u: list) {
+			if (usedVertices[u.getKey()] == false) {
+				u.setParentKey(lastRemoved.getKey());
+				Vertex n = vertexInQueue(u);
+				if (n == null)
+					pq.offer(u);
+				else if (u.getWeight() < n.getWeight()){
+					n.setParentKey(lastRemoved.getKey());
+					n.setWeight(u.getWeight());
+					pq.remove(n);
+					tempL.add(n);
 				}
-			}*/
-			v.setParentKey(parentKey);
-			Vertex u = vertexInQueue(v);
-			if (u == null)
-				pq.offer(v);
-			else {
-				u.setParentKey(parentKey);
-				u.setWeight(v.getWeight());
 			}
+			
+			
+			list.remove(u.getDuplicateRef());
+			
 		}
 		
-		for (int i = 0; i < tempList.size(); i++) {
-			pq.remove(tempList.get(i));
-			pq.offer(tempList.get(i));
+		for (Vertex v: tempL) {
+			pq.offer(v);
 		}
-		
-//		while (!pq.isEmpty()) {
-//			Vertex v = pq.poll();
-//			tempList.add(v);
-//		}
-//		
-//		for (Vertex v: tempList)
-//			pq.offer(v);
-		
 	}
 	
 	/*public void findPrims() {
