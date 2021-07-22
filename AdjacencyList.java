@@ -1,15 +1,22 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 
+/*
+ * 
+ * AdjacencyList class 
+ *
+ */
 public class AdjacencyList {
 	private int numVertices;
 	private int numEdges;
 	private LinkedList<Vertex>[] adjList;
 	private ArrayList<Edge> edges;
 	
-
-	
+	/**
+	 * Constructor
+	 * @param numVertices		Number of Vertices
+	 * @param numEdges			Number of Edges
+	 */
 	@SuppressWarnings("unchecked")
 	public AdjacencyList(int numVertices, int numEdges) {
 		this.numVertices = numVertices;
@@ -21,6 +28,10 @@ public class AdjacencyList {
 		}
 	}
 	
+	/**
+	 * Add an edge and its vertices to the adjacency list
+	 * @param e				Edge to add
+	 */
 	public void addEdgeToAdjacencyList(Edge e) {
 		edges.add(e);
 		Vertex v1 = new Vertex(e.getStartVertex(), e.getWeight());
@@ -32,6 +43,10 @@ public class AdjacencyList {
 		adjList[v1.getKey()].add(v2);
 	}
 	
+	/**
+	 * Remove a Vertex from the adjacency list
+	 * @param v					Vertex to remove
+	 */
 	public void removeVertex(Vertex v) {
 		Vertex v1 = v;
 		Vertex v2 = v.getDuplicateRef();
@@ -39,27 +54,10 @@ public class AdjacencyList {
 		adjList[v1.getKey()].removeFirstOccurrence(v2);
 		adjList[v2.getKey()].removeFirstOccurrence(v1);
 	}
-	
-	public Vertex findMinInListj(int j) {
-		Vertex ret = new Vertex(-1, Double.MAX_VALUE);
-		for (int i = 0; i < adjList[j].size(); i++) {
-			if (adjList[j].get(i).getWeight() < ret.getWeight())
-				ret = adjList[j].get(i);
-		}
-		
-		return ret;
-	}
-	
-	public void print() {
-		for (int i = 0; i < numVertices; i++) {
-			System.out.print(i + " ");
-			for (Vertex v: adjList[i]) {
-				System.out.print(v + " ");
-			}
-			System.out.println();
-		}
-	}
 
+	/*
+	 * Getters and Setters
+	 */
 	public int getNumVertices() {
 		return numVertices;
 	}
@@ -79,21 +77,4 @@ public class AdjacencyList {
 	public LinkedList<Vertex>[] getAdjList() {
 		return adjList;
 	}
-
-	public void setAdjList(LinkedList<Vertex>[] adjList) {
-		this.adjList = adjList;
-	}
-
-	public ArrayList<Edge> getEdges() {
-		return edges;
-	}
-
-	public void setEdges(ArrayList<Edge> edges) {
-		this.edges = edges;
-	}
-	
-	
-	
-	
-	
 }
