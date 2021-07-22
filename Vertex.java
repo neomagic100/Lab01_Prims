@@ -37,7 +37,7 @@ public class Vertex {
 
 	@Override
 	public String toString() {
-		return key + "<" + duplicateRef.getKey() + ">" + " Parent : " + parentKey + "|" + weight;
+		return key + "-" + parentKey + " " + String.format("%.5f", weight);
 	}
 
 	public Vertex getDuplicateRef() {

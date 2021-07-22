@@ -10,6 +10,7 @@ public class AdjacencyList {
 	
 
 	
+	@SuppressWarnings("unchecked")
 	public AdjacencyList(int numVertices, int numEdges) {
 		this.numVertices = numVertices;
 		this.numEdges = numEdges;

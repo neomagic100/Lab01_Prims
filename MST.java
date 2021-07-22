@@ -25,11 +25,120 @@ public class MST {
 		this.adjList = adjList;
 		mst = new ArrayList<>();
 		pq = new PriorityQueue<>(new Compare());
+		initQ();
 		setWeight(0);
 		usedVertices = new boolean[numVertices];
 	}
 	
+	public void initQ() {
+		for (int i = 0; i < numVertices; i++) {
+			pq.offer(new Vertex(i, Double.MAX_VALUE));
+		}
+		
+		Vertex v = pq.poll();
+		v.setWeight(0);
+		pq.offer(v);
+	}
+	
+	public void printq() {
+		for (Vertex v: pq)
+			System.out.println(v);
+	}
+	
 	public void findPrims() {
+		long s, e, t;
+		s = System.currentTimeMillis();
+		LinkedList<Vertex> currAdjList;
+		
+		while (!pq.isEmpty()) {
+			Vertex v = pq.poll();
+			mst.add(v);
+			weight += v.getWeight();
+			currAdjList = adjList.getAdjList()[v.getKey()];
+			for (Vertex u: currAdjList) {
+				if (usedVertices[u.getKey()] == false) {
+					updateQ(currAdjList, v.getKey());
+				}
+			}
+			usedVertices[v.getKey()] = true;
+		}
+		// Remove 0 index with 0 weight
+		mst.remove(0);
+		
+		e = System.currentTimeMillis();
+		t = e - s;
+		System.err.printf("Time elapsed: %d ms\n", t);
+	}
+	
+	public int getNumVertices() {
+		return numVertices;
+	}
+
+	public void setNumVertices(int numVertices) {
+		this.numVertices = numVertices;
+	}
+
+	public AdjacencyList getAdjList() {
+		return adjList;
+	}
+
+	public void setAdjList(AdjacencyList adjList) {
+		this.adjList = adjList;
+	}
+
+	public ArrayList<Vertex> getMst() {
+		return mst;
+	}
+
+	public void setMst(ArrayList<Vertex> mst) {
+		this.mst = mst;
+	}
+
+	public PriorityQueue<Vertex> getPq() {
+		return pq;
+	}
+
+	public void setPq(PriorityQueue<Vertex> pq) {
+		this.pq = pq;
+	}
+
+	public boolean[] getUsedVertices() {
+		return usedVertices;
+	}
+
+	public void setUsedVertices(boolean[] usedVertices) {
+		this.usedVertices = usedVertices;
+	}
+
+	public void updateQ(LinkedList<Vertex> list, int parentKey) {
+		ArrayList<Vertex> tempList = new ArrayList<>();
+		for (Vertex v: list) {
+			for (Vertex u: pq) {
+				if (v.getKey() == u.getKey() && v.getWeight() < u.getWeight()) {
+					u.setWeight(v.getWeight());
+					u.setParentKey(parentKey);
+					tempList.add(u);
+					//pq.remove(u);
+				}
+			}
+		}
+		
+		for (int i = 0; i < tempList.size(); i++) {
+			pq.remove(tempList.get(i));
+			pq.offer(tempList.get(i));
+		}
+		
+//		while (!pq.isEmpty()) {
+//			Vertex v = pq.poll();
+//			tempList.add(v);
+//		}
+//		
+//		for (Vertex v: tempList)
+//			pq.offer(v);
+		
+	}
+	
+	/*public void findPrims() {
 		// Initialize PriorityQueue
 		boolean updated = false;
 		int adjIndex = 0;
@@ -82,7 +191,7 @@ public class MST {
 		
 		
 		
-	}
+	}*/
 	
 	public void updatePQ() {
 		ArrayList<Vertex> list = new ArrayList<>();
