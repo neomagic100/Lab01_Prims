@@ -28,13 +28,11 @@ public class Driver {
 		}
 	
 		fscnr.close();
-		
-		adjList.print();
-		System.out.println();
 		MST m = new MST(numVertices, adjList);
 		m.findPrims();
+		//for (Vertex v: m.getMst())
+		//	System.out.println(v);
 		System.out.println(m.getWeight());
-		
 		
 	}
 
