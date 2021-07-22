@@ -31,13 +31,14 @@ public class MST {
 	}
 	
 	public void initQ() {
-		for (int i = 0; i < numVertices; i++) {
+		pq.offer(new Vertex(0, 0));
+		/*for (int i = 0; i < numVertices; i++) {
 			pq.offer(new Vertex(i, Double.MAX_VALUE));
 		}
 		
 		Vertex v = pq.poll();
 		v.setWeight(0);
-		pq.offer(v);
+		pq.offer(v);*/
 	}
 	
 	public void printq() {
@@ -47,20 +48,33 @@ public class MST {
 	
 	public void findPrims() {
 		long s, e, t;
+		int iter = 0;
 		s = System.currentTimeMillis();
 		LinkedList<Vertex> currAdjList;
-		
+		System.out.println("Starting Prims");
 		while (!pq.isEmpty()) {
 			Vertex v = pq.poll();
 			mst.add(v);
+			//if (iter % 10000 == 0)
+				System.err.println(v);
 			weight += v.getWeight();
 			currAdjList = adjList.getAdjList()[v.getKey()];
 			for (Vertex u: currAdjList) {
 				if (usedVertices[u.getKey()] == false) {
-					updateQ(currAdjList, v.getKey());
+					//updateQ(currAdjList, v.getKey());
+					u.setParentKey(v.getKey());
+					Vertex n = vertexInQueue(u);
+					if (n == null)
+						pq.offer(u);
+					else if (u.getWeight() < n.getWeight()){
+						n.setParentKey(v.getKey());
+						n.setWeight(u.getWeight());
+					}
 				}
 			}
+			sortQ();
 			usedVertices[v.getKey()] = true;
+			iter++;
 		}
 		// Remove 0 index with 0 weight
 		mst.remove(0);
@@ -68,6 +82,17 @@ public class MST {
 		e = System.currentTimeMillis();
 		t = e - s;
 		System.err.printf("Time elapsed: %d ms\n", t);
+	}
+	
+	public void sortQ() {
+		ArrayList<Vertex> list = new ArrayList<>();
+		while (!pq.isEmpty()) {
+			list.add(pq.remove());
+		}
+		
+		for (Vertex v: list) {
+			pq.offer(v);
+		}
 	}
 	
 	public int getNumVertices() {
@@ -109,17 +134,36 @@ public class MST {
 	public void setUsedVertices(boolean[] usedVertices) {
 		this.usedVertices = usedVertices;
 	}
+	
+	public Vertex vertexInQueue(Vertex v) {
+		if (pq.isEmpty())
+			return null;
+		for (Vertex u: pq) {
+			if (v.getKey() == u.getKey())
+				return u;
+		}
+		
+		return null;
+	}
 
 	public void updateQ(LinkedList<Vertex> list, int parentKey) {
 		ArrayList<Vertex> tempList = new ArrayList<>();
 		for (Vertex v: list) {
-			for (Vertex u: pq) {
+			/*for (Vertex u: pq) {
 				if (v.getKey() == u.getKey() && v.getWeight() < u.getWeight()) {
 					u.setWeight(v.getWeight());
 					u.setParentKey(parentKey);
 					tempList.add(u);
 					//pq.remove(u);
 				}
+			}*/
+			v.setParentKey(parentKey);
+			Vertex u = vertexInQueue(v);
+			if (u == null)
+				pq.offer(v);
+			else {
+				u.setParentKey(parentKey);
+				u.setWeight(v.getWeight());
 			}
 		}
 		
